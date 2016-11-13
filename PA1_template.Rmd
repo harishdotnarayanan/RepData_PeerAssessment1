@@ -25,8 +25,21 @@ The mean total number of steps taken per day is **`r mean_total_steps`**
 
 The median total number of steps taken per day is **`r median_total_steps`**
 
+
 ## What is the average daily activity pattern?
 
+```{r}
+        library(dplyr)
+        avgstep <- activity %>% 
+                group_by(interval) %>% 
+                summarise(avg_step = mean(steps, na.rm = TRUE))
+        plot(x = avgstep$interval, y = avgstep$avg_step, type = "l")
+        max_steps <- max(avgstep$avg_step)
+        max_interval <- avgstep[avgstep$avg_step == max_steps,]$interval
+```
+
+
+Interval number `r max_interval` contains the highest average step count of `r max_steps`
 
 
 ## Imputing missing values
