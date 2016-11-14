@@ -4,22 +4,29 @@ output:
   html_document:
     keep_md: true
 ---
-
+```{r include=FALSE}
+        library(dplyr)
+        library(ggplot2)
+```
 
 ## Loading and preprocessing the data
+
 ```{r echo=TRUE}
         activity <- read.csv(unzip("./activity.zip"))
-        head(activity)
+        activity <- activity[,c(2,3,1)]
+        activity$date <- as.Date(activity$date)
 ```
+
+
 ## What is mean total number of steps taken per day?
-```{r echo=TRUE, results='markup'}
-        library(dplyr)
-        grouped_activity <- activity %>% 
+
+```{r echo=TRUE}
+        daily_total_steps <- activity %>% 
                 group_by(date) %>% 
-                summarise(total_steps = sum(steps))
-        hist(grouped_activity$total_steps)
-        mean_total_steps <- mean(grouped_activity$total_steps, na.rm = TRUE)
-        median_total_steps <- median(grouped_activity$total_steps, na.rm = TRUE)
+                summarise(total_steps = sum(steps, na.rm = TRUE))
+        hist(daily_total_steps$total_steps)
+        mean_total_steps <- mean(daily_total_steps$total_steps, na.rm = TRUE)
+        median_total_steps <- median(daily_total_steps$total_steps, na.rm = TRUE)
 ```
 The mean total number of steps taken per day is **`r mean_total_steps`**
 
@@ -28,14 +35,15 @@ The median total number of steps taken per day is **`r median_total_steps`**
 
 ## What is the average daily activity pattern?
 
-```{r}
-        library(dplyr)
-        avgstep <- activity %>% 
+```{r echo=TRUE}
+        mean_steps_per_interval <- activity %>% 
                 group_by(interval) %>% 
                 summarise(avg_step = mean(steps, na.rm = TRUE))
-        plot(x = avgstep$interval, y = avgstep$avg_step, type = "l")
-        max_steps <- max(avgstep$avg_step)
-        max_interval <- avgstep[avgstep$avg_step == max_steps,]$interval
+        plot(x = mean_steps_per_interval$interval, 
+             y = mean_steps_per_interval$avg_step, 
+             type = "l")
+        max_steps <- max(mean_steps_per_interval$avg_step)
+        max_interval <- mean_steps_per_interval[mean_steps_per_interval$avg_step == max_steps,]$interval
 ```
 
 
@@ -44,6 +52,52 @@ Interval number `r max_interval` contains the highest average step count of `r m
 
 ## Imputing missing values
 
+```{r echo=TRUE}
+        na_count <- sum(is.na(activity))
+```
+
+There are `r na_count` rows containing NA values
+
+```{r}
+        act2 <- activity
+        act2[is.na(act2$steps),]$steps <-
+                mean_steps_per_interval[mean_steps_per_interval$interval == 
+                                                act2[is.na(act2$steps),]$interval,]$avg_step
+        
+        new_daily_total_steps <- act2 %>% 
+                group_by(date) %>% 
+                summarise(total_steps = sum(steps, na.rm = TRUE))
+        hist(new_daily_total_steps$total_steps)
+        new_mean_total_steps <- mean(new_daily_total_steps$total_steps, na.rm = TRUE)
+        new_median_total_steps <- median(new_daily_total_steps$total_steps, na.rm = TRUE)
+```
+
+The mean total number of steps taken per day is **`r new_mean_total_steps`**
+
+The median total number of steps taken per day is **`r new_median_total_steps`**
+
+By imputing the missing (NA) step values, there is an increase in the mean and median of the total steps taken per day.
+
+Increase in mean = **`r new_mean_total_steps - mean_total_steps`**
+
+Increase in median = **`r new_median_total_steps - median_total_steps`**
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r echo=TRUE}
+        library(ggplot2)
+        day <- weekdays(act2$date)
+        act2 <- cbind(act2, 
+                          day = ifelse(weekdays(act2$date) == "Saturday" |
+                                               weekdays(act2$date) == "Sunday",
+                                       "Weekend", "Weekday"))
+        new_mean_steps_per_interval <- act2 %>% 
+                group_by(day, interval) %>% 
+                summarise(avg_step = mean(steps, na.rm = TRUE))
+        
+        p <- ggplot(new_mean_steps_per_interval, aes(x = interval, y = avg_step))
+        p <- p + geom_line()
+        p <- p + facet_grid(day ~ .)
+        p
+```
