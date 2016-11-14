@@ -4,7 +4,7 @@ output:
   html_document:
     keep_md: true
 ---
-```{r include=FALSE}
+```{r include_packages, include=FALSE}
         # including all required packages
         library(dplyr)
         library(ggplot2)
@@ -12,7 +12,7 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r echo=TRUE}
+```{r read_ready_data, echo=TRUE}
         # reading from the zip file after unzipping
         activity <- read.csv(unzip("./activity.zip"))
 
@@ -27,7 +27,7 @@ output:
 
 ## What is mean total number of steps taken per day?
 
-```{r echo=TRUE}
+```{r mean_steps_per_day, echo=TRUE}
         # using dplyr to group by date and calculating 
         # total steps per date (ignoring NAs)
         daily_total_steps <- activity %>% 
@@ -50,7 +50,7 @@ The median total number of steps taken per day is **`r median_total_steps`**
 
 ## What is the average daily activity pattern?
 
-```{r echo=TRUE}
+```{r steps_per_interval, echo=TRUE}
         # using dplyr to group by interval and then calculating the 
         # average for each interval. This will be used later as well.
         mean_steps_per_interval <- activity %>% 
@@ -79,14 +79,14 @@ Interval number **`r max_interval`** contains the highest average step count of 
 
 ## Imputing missing values
 
-```{r echo=TRUE}
+```{r count_nas, echo=TRUE}
         # Counting the number of rows of missing steps
         na_count <- sum(is.na(activity))
 ```
 
 There are **`r na_count`** rows containing NA values
 
-```{r echo=TRUE}
+```{r fill_nas, echo=TRUE}
         # saving the data to another variable
         act2 <- activity
 
@@ -125,7 +125,7 @@ Increase in median = **`r new_median_total_steps - median_total_steps`**
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r echo=TRUE}
+```{r weekday_vs_weekend, echo=TRUE}
         # Determining which days are weekends & weekdays and 
         # saving to new variable
         day <- weekdays(act2$date)

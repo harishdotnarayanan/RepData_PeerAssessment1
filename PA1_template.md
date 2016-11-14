@@ -33,7 +33,7 @@
              xlab = "Total number of steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](PA1_template_files/figure-html/mean_steps_per_day-1.png)<!-- -->
 
 ```r
         # calculating mean and medians for the total steps per date
@@ -64,7 +64,7 @@ The median total number of steps taken per day is **10395**
              main = "Average step count per interval across all days")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](PA1_template_files/figure-html/steps_per_interval-1.png)<!-- -->
 
 ```r
         # Determining the maximum number of steps and in which interval this
@@ -112,7 +112,7 @@ There are **2304** rows containing NA values
              xlab = "NEW Total number of steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_template_files/figure-html/fill_nas-1.png)<!-- -->
 
 ```r
         # Recalculating the new mean and median of total steps taken per day
@@ -159,4 +159,4 @@ Increase in median = **44**
         p
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](PA1_template_files/figure-html/weekday_vs_weekend-1.png)<!-- -->
